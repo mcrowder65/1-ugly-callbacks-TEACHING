@@ -1,0 +1,12 @@
+{
+  "name": "1-ugly-callbacks-TEACHING",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "dependencies": {
+    "nodemon": "^2.0.2"
+  }
+}
