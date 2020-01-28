@@ -7,30 +7,32 @@ It turns out there is also a function in utilities called `getCatBreeds` that re
 
 Let's output the result of that function!
 
-I'll go ahead and comment the first console.log so we only see our cats.
-
 ```js
 utilities.getCatBreeds().then(console.log)
 ```
 
+Now looking at the terminal, you can see all the kinds of cats that getCatBreeds is returning.
+
 Now we have the same desire to first get all of the names of the cats, then get a particular breed.
 
-So let's update our functions above so they apply to the cats as well.
+In turns out that we already have that logic done for us with the dogs, so let's refactor getDogNames and getDog to be generic for our
+purposes
+
+```js
+function getNames(breeds) {
+  return breeds.map(breed => breed.name)
+}
+
+function getBreed(breed) {
+  return function(names) {
+    return names.find(name => name === breed) || "Not Found"
+  }
+}
+```
 
 ENSURE THAT ALL VARIABLES ARE RENAMED!!!!!
 
-OK, now let's pull out a Russian Blue out of the cat breeds
-
-OK cool, now we can see Golden Retriever and Russian Blue getting pulled out of here.
-
-Now, we also have another utility function that does calls out to a third party rest api
-and tells us which breed would be a better pet based on the breed of dog vs cat.
-
-We want to utilize this function along with our other functions that return us a valid dog breed and valid cat breed.
-
-Let's refactor the two snippets into singular functions.
-
-First I'll refactor the dog snippet
+Now that we have these refactored, let's create getDog and getCat functions
 
 ```js
 function getDog(breed) {
@@ -54,15 +56,19 @@ function getCat(breed) {
 
 Cool, now we want to use the results of `getDog('Golden Retriever') and`getCat('Russian Blue')` to determine which pet would be the best
 
-How do you think we could do this? Can we just use promise chaining?
+It turns out there is another function in our utilities file, that given a dog breed and a cat breed, it returns which breed
+would make a better pet.
 
-Unfortunately... This is a limitation of promises, where when you have two values that were retrieved based on
-resolved promises, you cannot chain the promises together, and you have to resolve a promise in the callback of another promise
+How could we pass in both a resolved dog value and a resolved cat value at the same time?
+Can we just use promise chaining?
+
+Unfortunately... This is a limitation of promises, when you have two values that were retrieved based on
+resolved promises, you cannot chain the promises together, you have to resolve a promise in the callback of another promise
 resolution.
 
 Let me show you what I'm talking about.
 
-First let's do the dog one:
+First let's resolve getDog
 
 ```js
 getDog("Golden Retriever").then(dog => {
@@ -70,8 +76,7 @@ getDog("Golden Retriever").then(dog => {
 })
 ```
 
-Now unfortunately, we can't chain this promise again when getting the catBreed, we have to call `getCat` in the callback
-of the getDog promise
+Now that we have dog, let's get cat.
 
 ```js
 getDog("Golden Retriever").then(dog => {
@@ -82,7 +87,7 @@ getDog("Golden Retriever").then(dog => {
 })
 ```
 
-Now, let's call the `getBestPet` method
+Then lastly, let's call the `getBestPet` method
 
 ```js
 getDog("Golden Retriever").then(dog => {
@@ -92,10 +97,17 @@ getDog("Golden Retriever").then(dog => {
 })
 ```
 
-And then after `getDog`, we can call .then console.log
+Now, you can see that we are composing promise resolutions together.
 
-And we can see that Golden Retriever is the best pet if we look at the terminal
+First we get the dog, then since we also need the value of cat after dog has been retrieved,
+we have to getCat in the same .then block, and then once cat is retrieved, we use both dog and cat and pass those
+into the getBestPet method
+
+Let's save this and see who is the best pet between a golden retriever and a russian blue cat.
+Looks like Golden Retriever is the better of the two.
 
 And if we change "Golden Retriever" to a Corgi, then let's see what it returns
 
 It looks like a Russian Blue cat is better than a Corgi!
+
+And this is how you are able to compose promise resolution values together
