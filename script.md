@@ -1,5 +1,4 @@
 Alright! Welcome back!
-
 We've been having LOTS of fun with all of these dogs.
 
 Let's include some cats into this promise party!
